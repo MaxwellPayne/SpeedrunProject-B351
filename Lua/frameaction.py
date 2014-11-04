@@ -1,36 +1,44 @@
 class Btn_t:
     """Enum of button presses"""
-    # UNKNOWNs are stand-ins for the
-    # buttons I don't yet know
-    UNKNOWN1 = 0
-    UNKNOWN2 = 1
-    UNKNOWN3 = 2
-    R = 3
-    UNKNOWN4 = 4
-    UNKNOWN5 = 5
-    UNKNOWN6 = 6
-    UNKNOWN7 = 7
+    Up = 0
+    Dn = 1
+    Lt = 2
+    Rt = 3
+    Sl = 4
+    St = 5
+    Y = 6
+    B = 7
     X = 8
     A = 9
-    UNKNOWN8 = 10
-    UNKNOWN9 = 11
+    L = 10
+    R = 11
     
     @classmethod
     def all_buttons(cls):
         """Returns a list of all button flags in order"""
-        return tuple((cls.UNKNOWN1, cls.UNKNOWN2, cls.UNKNOWN3, cls.R,
-           cls.UNKNOWN4, cls.UNKNOWN5, cls.UNKNOWN6, cls.UNKNOWN7,
-           cls.X, cls.A, cls.UNKNOWN8, cls.UNKNOWN9))
+        return tuple((cls.Up, cls.Dn, cls.Lt, cls.Rt,
+           cls.Sl, cls.St, cls.Y, cls.B,
+           cls.X, cls.A, cls.L, cls.R))
 
 
 class Frame(object):
     """One frame of gameplay, can be viewed as either a
     line in a mnemonic file or bit flags that represent
     whether or not each button is pressed"""
-    
-    btn_representations = ['?', '?', '?', 'R', '?', '?', '?', '?', 'X', 'A', '?', '?']
+
+    btn_representations = {Btn_t.Up: 'u',
+                           Btn_t.Dn: 'd',
+                           Btn_t.Lt: 'l',
+                           Btn_t.Rt: 'r',
+                           Btn_t.Sl: '&',
+                           Btn_t.St: '*',
+                           Btn_t.Y : 'Y',
+                           Btn_t.B : 'B',
+                           Btn_t.X : 'X',
+                           Btn_t.A : 'A',
+                           Btn_t.L : 'L',
+                           Btn_t.R : 'R'}
     # characters of each button that will show up in the mnemonic frame
-    # ^ as of right now ?'s stand in for buttons that I am not familiar with
     
     def __init__(self, *flags):
         self._bitvalue = 0
@@ -42,10 +50,9 @@ class Frame(object):
 
     def __str__(self):
         """Shows the frame as it should appear to the mnemonic reader"""
-        characters = []
-        all_flags = zip(Btn_t.all_buttons(), self.__class__.btn_representations)
-        for flag, btn_char in all_flags:
-            characters.append(btn_char if self.has_button(flag) else '.')
+        characters, representations = [], self.__class__.btn_representations
+        for flag in Btn_t.all_buttons():
+            characters.append(representations[flag] if self.has_button(flag) else '.')
         return '|..|' + ''.join(characters) + '|............|'
 
     def add_buttons(self, *flags):
@@ -74,6 +81,6 @@ class Frame(object):
 
 
 if __name__ == '__main__':
-    frame = Frame(Btn_t.R, Btn_t.X)
+    frame = Frame(Btn_t.Rt, Btn_t.X)
     print frame
 

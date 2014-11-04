@@ -1,1 +1,3 @@
 termcolor>=1.1
+lockfile>=0.10.2
+
