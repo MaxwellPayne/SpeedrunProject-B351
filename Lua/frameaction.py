@@ -40,9 +40,21 @@ class Frame(object):
                            Btn_t.R : 'R'}
     # characters of each button that will show up in the mnemonic frame
     
-    def __init__(self, *flags):
+    def __init__(self, *flags, **kwargs):
         self._bitvalue = 0
-        self._bitvalue = self.add_buttons(*flags)
+
+        if flags and kwargs:
+            raise ValueError('cannot init with both flags and frame_string')
+
+        if 'frame_string' in kwargs: # init with existing string
+            frame_string = kwargs['frame_string'][4:16]
+            btn_flags = Btn_t.all_buttons()
+            # convert P1 characters into flags
+            flags_present = [btn_flags[idx] for idx, char in enumerate(frame_string) if char != '.']
+            self.add_buttons(*flags_present)
+
+        else: # init with the flags passed
+            self.add_buttons(*flags)
 
     @property
     def bitvalue(self):
@@ -81,6 +93,7 @@ class Frame(object):
 
 
 if __name__ == '__main__':
-    frame = Frame(Btn_t.Rt, Btn_t.X)
+    
+    frame = Frame(frame_string='|..|u..r....X...|............|')
     print frame
 
