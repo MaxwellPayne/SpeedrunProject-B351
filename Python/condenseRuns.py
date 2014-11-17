@@ -20,5 +20,10 @@ def condenseRuns(genNumber):
     allResults.pop(0)   # Remove the headers before we return
     return allResults
 
+def getBestRuns(genNumber,numberOfRuns):
+    """Returns a list of integers representing the top numberOfRuns runs from the given generation"""
+    pass
+
+
 if __name__ == '__main__':
     condenseRuns(0)
