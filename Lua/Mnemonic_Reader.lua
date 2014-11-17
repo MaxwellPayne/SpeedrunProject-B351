@@ -7,7 +7,7 @@ RAM_x = 0x000094
 
 -- Settings:
 -- TODO: Load in settings from a central file?
-runsPerGen = 2      -- How many runs we do in each generation (placeholder value is 2)
+runsPerGen = 100      -- How many runs we do in each generation
 numberOfWorkers = 1 -- How many workers are running, in total?  This value isn't zero-indexed, because we use it for our mod
 myWorkerNumber = 0  -- Which worker am I?  This value is zero-indexed, because we add it to the result of the mod
 
@@ -17,10 +17,12 @@ runNumber = myWorkerNumber - numberOfWorkers    -- Tracks the current run
 
 while true do   -- infinite loop
 
-    maxXPos = 0     -- Reset our "score" counter
+    -- Reset our "max score" counters
+    maxXPos = 0
     currentXPos = 0
     maxXFrameNumber = 0
-
+    currentFrameNumber = 0
+    
     -- First, pick a file to load
     runNumber = runNumber + numberOfWorkers -- Increase our run number
     if runNumber >= runsPerGen then         -- Check if we need to change the generation (we're zero-indexed)
@@ -38,21 +40,22 @@ while true do   -- infinite loop
         runFile = io.open(nextRunPath, "r") -- Try to open it again
     end
     
-    if runFile then                                      -- If we managed to open the file...
-        savestate.load("Y1.State")                      -- Load the provided savestate
-        for line in runFile:lines() do                   -- For every line of input provided...
-            joypad.setfrommnemonicstr(line)             -- Set the next frame's input, and display it to the screen
-            gui.text(0,0, line)                         -- Write the current line of input to the screen
+    if runFile then                                 -- If we managed to open the file...
+        savestate.load("Y1.State")                  -- Load the provided savestate
+        for line in runFile:lines() do              -- For every line of input provided...
+            joypad.setfrommnemonicstr(line)         -- Set the next frame's input
+            gui.text(0,0, line)                     -- Write the current line of input to the screen
             
             -- Keep track of the maximum X position reached
             currentXPos = memory.read_u16_le(RAM_x)
-            if currentXPos > maxXPos then           -- We have a new max X
+            if currentXPos > maxXPos then               -- We have a new max X
                 maxXPos = currentXPos
-                maxXFrameNumber = emu.framecount()  -- Remember to save the frame number!
+                maxXFrameNumber = currentFrameNumber    -- Save the frame number
             end
             
             gui.text(0,24,currentXPos)                  -- Write Mario's position information (x position only)
             emu.frameadvance();                         -- Advance to the next frame...
+            currentFrameNumber = currentFrameNumber + 1 -- Update the frame counter
         end
         runFile:close()                                      -- The run is over, so close the file
         
