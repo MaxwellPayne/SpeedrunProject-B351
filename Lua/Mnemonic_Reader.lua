@@ -44,7 +44,6 @@ while true do   -- infinite loop
         savestate.load("Y1.State")                  -- Load the provided savestate
         for line in runFile:lines() do              -- For every line of input provided...
             joypad.setfrommnemonicstr(line)         -- Set the next frame's input
-            gui.text(0,0, line)                     -- Write the current line of input to the screen
             
             -- Keep track of the maximum X position reached
             currentXPos = memory.read_u16_le(RAM_x)
@@ -53,7 +52,11 @@ while true do   -- infinite loop
                 maxXFrameNumber = currentFrameNumber    -- Save the frame number
             end
             
-            gui.text(0,24,currentXPos)                  -- Write Mario's position information (x position only)
+            -- Output to the screen
+            gui.text(0,0, line)         -- Write the current line of input to the screen
+            gui.text(470,0, runNumber)  -- Write the current run number
+            gui.text(0,24,currentXPos)  -- Write Mario's position information (x position only)
+            
             emu.frameadvance();                         -- Advance to the next frame...
             currentFrameNumber = currentFrameNumber + 1 -- Update the frame counter
         end
