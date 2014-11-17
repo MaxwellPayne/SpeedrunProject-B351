@@ -13,8 +13,12 @@ def condenseRuns(genNumber):
         allResults.append(str(fileNum) + ',' + resultFile.readline()+'\n')  # Add the result to our list
         resultFile.close()                                                  # Close the file
     
-    outputFile = open(resultsPath + "allResults.csv", 'w')  # Create a .csv
-    outputFile.writelines(allResults)                       # Write the results
-    outputFile.close()                                      # Close the file
+    outputFile = open(resultsPath + "../allResults.csv", 'w')  # Create a .csv
+    outputFile.writelines(allResults)                          # Write the results
+    outputFile.close()                                         # Close the file
+    
+    allResults.pop(0)   # Remove the headers before we return
+    return allResults
 
-condenseRuns(0)
+if __name__ == '__main__':
+    condenseRuns(0)
