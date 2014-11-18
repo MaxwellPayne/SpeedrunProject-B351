@@ -47,10 +47,7 @@ def readResult(genNumber,runNumber):
     # Return the list of ints
     return resultList
 
-def getConfig():
-    """Returns the settings of the configuration file as a list - don't use this if you could use a more specific function, such as getRunsPerGen()"""
-    # Temporary hack...
-    return [100,1,0]
-
 def getRunsPerGen():
-    return getConfig()[0]
+    """Returns the number of runs to be performed in each generation"""
+    # Temporary hack... please actually look at the headers for any of the config stuff, so we can move settings around in the file
+    return 100
