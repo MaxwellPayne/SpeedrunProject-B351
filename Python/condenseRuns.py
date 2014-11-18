@@ -1,6 +1,5 @@
 import os
 from fileIO import *
-from operator import itemgetter
 
 def condenseRuns(genNumber):
     """Returns the results of every run in a given generation"""
