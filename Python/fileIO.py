@@ -1,14 +1,24 @@
 import os
 
+# absolute path to this module
+_dir = os.path.dirname(os.path.abspath(__file__))
+
 def makeGen(genNumber):
-    """Creates a new generation"""
-    pass
+    """Creates a new generation directory structure if not exists"""
+    genDirName = os.path.join(_dir, '..', 'Output', 'gen%d' % genNumber)
+    # if gen{genNumber} directory does not exist, make it
+    if not os.path.exists(genDirName):
+        os.mkdir(genDirName)
+        # then cd into it and make 'Runs' aand 'Results' subdirectories
+        os.chdir(genDirName)
+        os.mkdir('Runs')
+        os.mkdir('Results')
+        os.chdir(_dir)
 
 def readRun(genNumber,runNumber):
     """Reads a given run number from a given generation, and returns a list of strings (the input strings)"""
     # Find the file
-    dir = os.path.dirname(__file__)
-    filename = os.path.join(dir, "../Output/gen" + str(genNumber) + "/Runs/run" + str(runNumber) + ".txt")
+    filename = os.path.join(_dir, "../Output/gen" + str(genNumber) + "/Runs/run" + str(runNumber) + ".txt")
     
     runFile = open(filename, 'r')           # Open the file
     lineList = runFile.read().splitlines()  # Read all lines into a list
@@ -19,8 +29,7 @@ def readRun(genNumber,runNumber):
 def writeRun(genNumber,runNumber,lineList):
     """Writes a given run number to a given generation, based on the passed list of strings (the inputs)"""
     # Find the file
-    dir = os.path.dirname(__file__)
-    filename = os.path.join(dir, "../Output/gen" + str(genNumber) + "/Runs/run" + str(runNumber) + ".txt")
+    filename = os.path.join(_dir, "../Output/gen" + str(genNumber) + "/Runs/run" + str(runNumber) + ".txt")
     
     runFile = open(filename, 'w')   # Open the file
     runFile.writelines(lineList)    # Write the given lines
@@ -29,8 +38,7 @@ def writeRun(genNumber,runNumber,lineList):
 def readResult(genNumber,runNumber):
     """Reads a given result number from a given generation, and returns a list where index 0 is the maximum X, and index 1 is the frame count"""
     # Find and open the results folder
-    dir = os.path.dirname(__file__)
-    resultsPath = os.path.join(dir, "../Output/gen" + str(genNumber) + "/Results/")
+    resultsPath = os.path.join(_dir, "../Output/gen" + str(genNumber) + "/Results/")
     
     #Build the path to the requested file
     fileName = resultsPath + "result" + str(runNumber) + ".txt"
@@ -48,6 +56,23 @@ def readResult(genNumber,runNumber):
     return resultList
 
 def getRunsPerGen():
-    """Returns the number of runs to be performed in each generation"""
-    # Temporary hack... please actually look at the headers for any of the config stuff, so we can move settings around in the file
-    return 100
+    """Returns the number of runs to be performed in each generation from .config file"""
+    configFpath = os.path.join('..', 'Output', 'genConfig.config')
+    # open the config file
+    with open(configFpath, 'r') as configFile:
+        # find line that specifies 'runsPerGen'
+        for ln in configFile:
+            if 'runsPerGen' in ln:
+                return int(ln.split(':')[1])
+        else: # failed to find config, return hard-coded value
+            return 99
+
+def genDoneRunning(genNumber):
+    """Returns bool for whether or not all Results files have been created in generation genNumber"""
+    resultsDir = os.path.join('..', 'Output', 'gen%d' % genNumber, 'Results')
+    
+    return len(os.listdir(resultsDir)) >= getRunsPerGen()
+
+if __name__ == '__main__':
+    print getRunsPerGen()
+    print genDoneRunning(0)
