@@ -8,7 +8,6 @@ function getConfig()
 ------------------------------------------------------------------
 -- Create a key-value table of all the items in the config file --
 ------------------------------------------------------------------
-
     -- Build a table (lines) of the lines inside the config file
     lines = {}
     for line in io.lines("../Output/genConfig.config") do
@@ -23,6 +22,7 @@ function getConfig()
         end                                             -- If it isn't, just leave it as a string
         configTable[key] = value                        -- Set the new key and value in the config table
     end
+    -- TODO: create workerNumber.temp if it doesn't exist already, and use that file to get my worker number
     return configTable
 end
 
