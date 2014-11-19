@@ -10,11 +10,27 @@ def condenseRuns(genNumber):
         allResults.append(resultList)                   # Then add it to the list
     return allResults
 
+def swap(A, x, y):          # Swap helper function for betterSort below
+    tmp = A[x]
+    A[x] = A[y]
+    A[y] = tmp
+
+def betterSort(resultList):
+    for i in range( len(resultList) ):
+        least = i
+        for k in range( i + 1 , len( resultList ) ):
+            if resultList[k][2] < resultList[least][2]:
+                least = k
+            elif resultList[k][2] == resultList[least][2]:          # Sorts based on Maximum X is frame value is the same
+                    if resultList[k][1] < resultList[least][1]:
+                        least = k
+        swap(resultList, least, i)
 
 def getBestRuns(genNumber,numberOfRuns):
     """Returns a list of integers representing the top numberOfRuns runs from the given generation"""
     results = condenseRuns(genNumber)
-    results.sort(key=lambda x: x[2])            # Sort runs based on distance reached
+    print results
+    betterSort(results)                         # Sort runs based on distance reached
     results.reverse()                           # Reverse so I can take the top N runs
     bestRuns = []
     if numberOfRuns == "completed":
@@ -40,4 +56,3 @@ def createCSV():
 if __name__ == '__main__':
     print condenseRuns(0)
     print getBestRuns(0,10)
-
