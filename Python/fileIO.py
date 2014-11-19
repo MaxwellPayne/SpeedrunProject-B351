@@ -1,7 +1,29 @@
-import os
+import os, copy
 
 # absolute path to this module
 _dir = os.path.dirname(os.path.abspath(__file__))
+_configTable = None
+
+def getConfig():
+    """Returns a table of configuration setting name : value pairs"""
+    global _configTable
+    # return the cached global _configTable if already created
+    if _configTable is None:
+        settings = {}
+        configFpath = os.path.join('..', 'Output', 'genConfig.config')
+        # open the config file
+        with open(configFpath, 'r') as configFile:
+            for ln in configFile:
+                # if not a blank line
+                if ln.rstrip() != '':
+                    # set setting strings as keys, ints as values
+                    name, val = tuple(ln.rstrip().split(':'))
+                    settings[name] = int(val)
+        _configTable = settings
+    # return a clone of the table so no module
+    # can alter the config settings used by other modules
+    return copy.copy(_configTable)
+
 
 def makeGen(genNumber):
     """Creates a new generation directory structure if not exists"""
@@ -57,15 +79,7 @@ def readResult(genNumber,runNumber):
 
 def getRunsPerGen():
     """Returns the number of runs to be performed in each generation from .config file"""
-    configFpath = os.path.join('..', 'Output', 'genConfig.config')
-    # open the config file
-    with open(configFpath, 'r') as configFile:
-        # find line that specifies 'runsPerGen'
-        for ln in configFile:
-            if 'runsPerGen' in ln:
-                return int(ln.split(':')[1])
-        else: # failed to find config, return hard-coded value
-            return 99
+    return getConfig()['runsPerGen']
 
 def genDoneRunning(genNumber):
     """Returns bool for whether or not all Results files have been created in generation genNumber"""
@@ -76,3 +90,6 @@ def genDoneRunning(genNumber):
 if __name__ == '__main__':
     print getRunsPerGen()
     print genDoneRunning(0)
+    print getConfig()
+    print getConfig()
+

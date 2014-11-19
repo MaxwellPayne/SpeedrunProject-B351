@@ -4,11 +4,12 @@ Chris, outputs the next generation"""
 from time import sleep
 
 from condenseRuns import getBestRuns
-from fileIO import makeGen, readRun, writeRun, genDoneRunning
+from fileIO import makeGen, readRun, writeRun, genDoneRunning, getConfig
 
-# hardcoded; should these be tracked somewhere else?
-GEN_NUMBER = 0
-KEEPERS_PER_GEN = 5
+CONFIG_TABLE = getConfig()
+
+CURRENT_GEN_NUMBER = CONFIG_TABLE['currentGenNumber']
+SURVIVORS_PER_GEN = CONFIG_TABLE['survivorsPerGen']
 
 def chris(stream_of_good_runs):
   # INPUT: a generator of strings, each of which is the entire mnemonic reader text from some good run
@@ -23,27 +24,27 @@ def streamRunfiles(genNumber, bestList):
 
 
 def _main():
-  global GEN_NUMBER, KEEPERS_PER_GEN
+  global CURRENT_GEN_NUMBER, SURVIVORS_PER_GEN
   while True:
     # wait for generation to finish
-    while not genDoneRunning(GEN_NUMBER):
+    while not genDoneRunning(CURRENT_GEN_NUMBER):
       sleep(0.01)
     # sleep little bit longer to avoid race conditions
     # with workers who still may be writing to Results files
     sleep(0.1)
-
-    bestRuns = getBestRuns(GEN_NUMBER, KEEPERS_PER_GEN)
-
+    
+    bestRuns = getBestRuns(CURRENT_GEN_NUMBER, SURVIVORS_PER_GEN)
+    
     # chris spawns a list of new runs based on the best from this gen
-    nextGenRuns = chris(streamRunfiles(GEN_NUMBER, bestRuns))
+    nextGenRuns = chris(streamRunfiles(CURRENT_GEN_NUMBER, bestRuns))
     
     # a new generation is born from chris's mutations
-    GEN_NUMBER += 1
-    makeGen(GEN_NUMBER)
+    CURRENT_GEN_NUMBER += 1
+    makeGen(CURRENT_GEN_NUMBER)
     
     # write all new runs to sperate files
     for runNum, runText in enumerate(nextGenRuns):
-      writeRun(GEN_NUMBER, runNum, runText)
+      writeRun(CURRENT_GEN_NUMBER, runNum, runText)
       
     # ...and loop
   
