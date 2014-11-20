@@ -9,21 +9,46 @@ function getConfig()
 -- Create a key-value table of all the items in the config file --
 ------------------------------------------------------------------
     -- Build a table (lines) of the lines inside the config file
-    lines = {}
+    local lines = {}
     for line in io.lines("../Output/genConfig.config") do
         lines[#lines + 1] = line
     end
     -- Now, build the config table from the lines table
-    configTable = {}
-    for k,v in pairs(lines) do                          -- For every key-value (k,v) pair in lines,
-        key, value = string.match(v,"([^:]+):([^:]+)")  -- Create "key" and "value" by splitting v on the ":"
-        if tonumber(value) ~= nil then                  -- Check if the value is numeric
-            value = tonumber(value)                     -- If it is, make it a number
-        end                                             -- If it isn't, just leave it as a string
-        configTable[key] = value                        -- Set the new key and value in the config table
+    local configTable = {}
+    for k,v in pairs(lines) do                                  -- For every key-value (k,v) pair in lines,
+        local key, value = string.match(v,"([^:]+):([^:]+)")    -- Create "key" and "value" by splitting v on the ":"
+        if tonumber(value) ~= nil then  -- Check if the value is numeric
+            value = tonumber(value)     -- If it is, make it a number
+        end                             -- If it isn't, just leave it as a string
+        configTable[key] = value        -- Set the new key and value in the config table
     end
-    -- TODO: create workerNumber.temp if it doesn't exist already, and use that file to get my worker number
+    
+    configTable["workerNumber"] = getWorkerNumber()     -- Pick my worker number
     return configTable
+end
+
+function getWorkerNumber()
+    local workerFile, err = io.open("../Output/workerNumber.temp")   -- Try to open the file
+    if err then
+        workerNum = (configTable["numberOfWorkers"] - 1)    -- We're the first worker
+        writeWorkerFile(configTable["numberOfWorkers"] - 2) -- Create the file
+    else
+        workerNum = workerFile:read('*n')               -- Read the number
+        workerFile:close()                              -- Close the file
+        if workerNum <= 0 then                          -- If we are the last worker, delete the file
+            workerNum = 0
+            os.remove("../Output/workerNumber.temp")
+        else                                            -- There are more workers to come
+            writeWorkerFile(workerNum - 1)              -- Write a lower number
+        end
+    end
+    return workerNum
+end
+
+function writeWorkerFile(numberToWrite)
+    local workerFile = io.open("../Output/workerNumber.temp", "w")    -- Create the file
+    workerFile:write(numberToWrite)                             -- Write the number
+    workerFile:close()                                          -- Close the file
 end
 
 function getNextRun()
@@ -38,7 +63,7 @@ function getNextRun()
 end
 
 function trackMaxX(maxXPos,currentFrameNumber)
-    currentXPos = memory.read_u16_le(RAM_x)
+    local currentXPos = memory.read_u16_le(RAM_x)
     if currentXPos > maxXPos then               -- We have a new max X
         maxXPos = currentXPos
         maxXFrameNumber = currentFrameNumber    -- Save the frame number
@@ -54,7 +79,7 @@ end
 
 function saveResults(maxXPos, maxXFrameNumber)
 -- Save the results to a file
-    resultsFile = io.open("../Output/gen" .. genNumber .. "/Results/result" .. runNumber .. ".txt","w")
+    local resultsFile = io.open("../Output/gen" .. genNumber .. "/Results/result" .. runNumber .. ".txt","w")
     resultsFile:write(maxXPos .. "," .. maxXFrameNumber)
     resultsFile:close()
 end
@@ -64,12 +89,13 @@ RAM_x = 0x000094
 
 -- Settings:
 configTable = getConfig()                        -- Read in the configuration file
+print(configTable)                               -- Output the config table to the console
 runsPerGen = configTable["runsPerGen"]           -- How many runs we do in each generation
 numberOfWorkers = configTable["numberOfWorkers"] -- How many workers are running, in total?  This value isn't zero-indexed, because we use it for our mod
 genNumber = configTable["currentGenNumber"]      -- Tracks our current generation
 
 -- Other Globals:
-myWorkerNumber = 0                               -- Which worker am I?  This value is zero-indexed, because we add it to the result of the mod
+myWorkerNumber = configTable["workerNumber"]     -- Which worker am I?  This value is zero-indexed, because we add it to the result of the mod
 runNumber = myWorkerNumber - numberOfWorkers     -- Tracks the current run
 
 while true do   -- infinite loop (this loop is our "main")
