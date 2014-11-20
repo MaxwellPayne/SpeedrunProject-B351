@@ -26,16 +26,16 @@ def _main():
   print("Initializing...")
   while True:
     # wait for generation to finish
-    print("Waiting for generation " + CURRENT_GEN_NUMBER + " to finish.")
+    print("Waiting for generation " + str(CURRENT_GEN_NUMBER) + " to finish.")
     while not genDoneRunning(CURRENT_GEN_NUMBER):
       sleep(0.01)
     # sleep little bit longer to avoid race conditions
     # with workers who still may be writing to Results files
     sleep(0.1)
     
-    print("Getting the best runs from generation " + CURRENT_GEN_NUMBER + ".")
+    print("Getting the best runs from generation " + str(CURRENT_GEN_NUMBER) + ".")
     bestRuns = getBestRuns(CURRENT_GEN_NUMBER, SURVIVORS_PER_GEN)
-    
+    print("The best runs are: " + str(bestRuns))
     nextGenRuns = []
     # Genetic spawns a list of new runs based on the best from this gen
     print("Creating new runs...")
