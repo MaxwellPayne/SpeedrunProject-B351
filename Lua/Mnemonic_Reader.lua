@@ -23,11 +23,11 @@ function getConfig()
         configTable[key] = value        -- Set the new key and value in the config table
     end
     
-    configTable["workerNumber"] = getWorkerNumber()     -- Pick my worker number
+    configTable["workerNumber"] = getWorkerNumber(configTable)     -- Pick my worker number
     return configTable
 end
 
-function getWorkerNumber()
+function getWorkerNumber(configTable)
     local workerFile, err = io.open("../Output/workerNumber.temp")   -- Try to open the file
     if err then
         workerNum = (configTable["numberOfWorkers"] - 1)    -- We're the first worker
@@ -72,8 +72,8 @@ function trackMaxX(maxXPos,currentFrameNumber)
 end
 
 function printToScreen(line, currentXPos)
-    gui.text(0,0, line)         -- Write the current line of input to the screen
-    gui.text(470,0, runNumber)  -- Write the current run number
+    --gui.text(0,0, line)         -- Write the current line of input to the screen
+    gui.text(0,0, runNumber)  -- Write the current run number
     gui.text(0,24,currentXPos)  -- Write Mario's position information (x position only)
 end
 
