@@ -71,10 +71,19 @@ function trackMaxX(maxXPos,currentFrameNumber)
     return maxXPos, maxXFrameNumber
 end
 
-function printToScreen(line, currentXPos)
-    --gui.text(0,0, line)         -- Write the current line of input to the screen
-    gui.text(0,0, runNumber)  -- Write the current run number
-    gui.text(0,24,currentXPos)  -- Write Mario's position information (x position only)
+function marioIsDead()
+    local marioPose = memory.read_u8(RAM_pose)
+    if marioPose == 62 then
+        return true
+    end
+    return false
+end
+
+function printToScreen(line, xPos, currentFrameNumber)
+    --gui.text(0,0, line)               -- Write the current line of input to the screen
+    gui.text(0,0, runNumber)            -- Write the current run number
+    gui.text(0,24,xPos)                 -- Write Mario's position information (x position only)
+    gui.text(0,48,currentFrameNumber)   -- Write the current frame number
 end
 
 function saveResults(maxXPos, maxXFrameNumber)
@@ -86,6 +95,7 @@ end
 
 -- Constants:
 RAM_x = 0x000094
+RAM_pose = 0x0013E0
 
 -- Settings:
 configTable = getConfig()                        -- Read in the configuration file
@@ -121,9 +131,12 @@ while true do   -- infinite loop (this loop is our "main")
         for line in runFile:lines() do              -- For every line of input provided...
             joypad.setfrommnemonicstr(line)                                     -- Set the next frame's input
             maxXPos, maxXFrameNumber = trackMaxX(maxXPos,currentFrameNumber)    -- Keep track of the maximum X position reached
-            printToScreen(line, currentXPos)                                    -- Output information to the screen
+            printToScreen(line, maxXPos, currentFrameNumber)                    -- Output information to the screen
             emu.frameadvance();                                                 -- Advance to the next frame
             currentFrameNumber = currentFrameNumber + 1                         -- Update the frame counter
+            if marioIsDead() then                                               -- End the run if Mario dies
+                break
+            end
         end
         -- The run is over, so close the run file, and write the results to a file
         runFile:close()
