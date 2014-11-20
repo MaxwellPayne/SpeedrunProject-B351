@@ -1,4 +1,5 @@
 import random
+import copy
 from frameaction import *
 
 
@@ -62,7 +63,7 @@ def mutate_batch(original, n):
 #Given a list of strings, returns a mutated list (non-destructive)
 def mutate_strand(original):
     #As to not destroy the original strand, make a copy
-    strand = original.copy()
+    strand = copy.copy(original)
     #walk over each string in the list
     for segment in enumerate(strand):
         P = random.random()

@@ -29,7 +29,7 @@ def betterSort(resultList):
 def getBestRuns(genNumber,numberOfRuns):
     """Returns a list of integers representing the top numberOfRuns runs from the given generation"""
     results = condenseRuns(genNumber)
-    print results
+    #print results
     betterSort(results)                         # Sort runs based on distance reached
     results.reverse()                           # Reverse so I can take the top N runs
     bestRuns = []

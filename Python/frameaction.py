@@ -1,17 +1,17 @@
 class Btn_t:
     """Enum of button presses"""
-    Up = 0
-    Dn = 1
-    Lt = 2
-    Rt = 3
-    Sl = 4
-    St = 5
-    Y = 6
-    B = 7
-    X = 8
-    A = 9
-    L = 10
-    R = 11
+    Up = 0  # up
+    Dn = 1  # down
+    Lt = 2  # left
+    Rt = 3  # right
+    Sl = 4  # select
+    St = 5  # start
+    Y = 6   # Y
+    B = 7   # B
+    X = 8   # X
+    A = 9   # A
+    L = 10  # L
+    R = 11  # R
     
     @classmethod
     def all_buttons(cls):
@@ -26,18 +26,18 @@ class Frame(object):
     line in a mnemonic file or bit flags that represent
     whether or not each button is pressed"""
 
-    btn_representations = {Btn_t.Up: 'u',
-                           Btn_t.Dn: 'd',
-                           Btn_t.Lt: 'l',
-                           Btn_t.Rt: 'r',
-                           Btn_t.Sl: '&',
-                           Btn_t.St: '*',
-                           Btn_t.Y : 'Y',
-                           Btn_t.B : 'B',
-                           Btn_t.X : 'X',
-                           Btn_t.A : 'A',
-                           Btn_t.L : 'L',
-                           Btn_t.R : 'R'}
+    btn_representations = {Btn_t.Up: 'u',  # up
+                           Btn_t.Dn: 'd',  # down
+                           Btn_t.Lt: 'l',  # left
+                           Btn_t.Rt: 'r',  # right
+                           Btn_t.Sl: '&',  # select
+                           Btn_t.St: '*',  # start
+                           Btn_t.Y : 'Y',  # Y
+                           Btn_t.B : 'B',  # B
+                           Btn_t.X : 'X',  # X
+                           Btn_t.A : 'A',  # A
+                           Btn_t.L : 'L',  # L
+                           Btn_t.R : 'R'}  # R
     # characters of each button that will show up in the mnemonic frame
     
     def __init__(self, *flags, **kwargs):
