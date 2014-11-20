@@ -49,8 +49,9 @@ PROB_TWO_MOVES = .1
 #given a strand as a list of strings and a natural number, returns a list of mutated strands
 def mutate_batch(original, n):
     batch = list()
-    #creates n mutated strands from the original and adds them to the list
-    for i in range(n):
+    batch.append(original)
+    #creates n-1 mutated strands from the original and adds them to the list
+    for i in range(n-1):
         mutation = mutate_strand(original)
         batch.append(mutation)
 
