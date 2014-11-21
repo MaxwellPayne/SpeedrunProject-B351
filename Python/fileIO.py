@@ -87,9 +87,14 @@ def genDoneRunning(genNumber):
     
     return len(os.listdir(resultsDir)) >= getRunsPerGen()
 
+def writeCSV(lines,fileName):
+    outputPath = os.path.join(_dir, "../Output/CSVs/")
+    outputFile = open(outputPath + fileName + ".csv", 'w')  # Create a .csv
+    outputFile.writelines(lines)                            # Write the results
+    outputFile.close()                                      # Close the file
+
 if __name__ == '__main__':
     print getRunsPerGen()
     print genDoneRunning(0)
     print getConfig()
     print getConfig()
-

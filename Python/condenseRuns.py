@@ -4,55 +4,41 @@ from fileIO import *
 def condenseRuns(genNumber):
     """Returns the results of every run in a given generation"""
     allResults = []
-    for runNumber in range(getRunsPerGen()):             # For ever run in the generation
+    for runNumber in range(100):                        # For every run in the generation
         resultList = readResult(genNumber,runNumber)    # Get the result of that run
         resultList.insert(0,runNumber)                  # Add the run number to it,
         allResults.append(resultList)                   # Then add it to the list
     return allResults
 
-def swap(A, x, y):          # Swap helper function for betterSort below
-    tmp = A[x]
-    A[x] = A[y]
-    A[y] = tmp
-
-def betterSort(resultList):
-    for i in range( len(resultList) ):
-        least = i
-        for k in range( i + 1 , len( resultList ) ):
-            if resultList[k][2] < resultList[least][2]:
-                least = k
-            elif resultList[k][2] == resultList[least][2]:          # Sorts based on Maximum X is frame value is the same
-                    if resultList[k][1] < resultList[least][1]:
-                        least = k
-        swap(resultList, least, i)
-
-def getBestRuns(genNumber,numberOfRuns):
+def getBestRuns(genNumber,numberOfRuns, returnFullResults = False):
     """Returns a list of integers representing the top numberOfRuns runs from the given generation"""
     results = condenseRuns(genNumber)
-    #print results
-    betterSort(results)                         # Sort runs based on distance reached
-    results.reverse()                           # Reverse so I can take the top N runs
     bestRuns = []
-    if numberOfRuns == "completed":
-        for i in results:
-            if i[2] == 2000:                    # Will return only runs that reached the end of the level
-                bestRuns.append(i)
-    else:
-        for i in range(0,numberOfRuns):         # Add run numbers of best runs to list
-            run = results[i]
-            runNum = run[0]
-            bestRuns.append(runNum)
-    return bestRuns
+    for run in range(numberOfRuns):
+        bestResult = results[0]       # Initialize the result number
+        for result in results:                      # Look for the best result
+            if result not in bestRuns:              # No double counting runs
+                if result[1] > bestResult[1]:       # If it got further,
+                    bestResult = result             # it's the new best.
+                elif result[1] == bestResult[1]:    # If it tied the best,
+                    if result[2] < bestResult[2]:   # and did it faster,
+                        bestResult = result         # it's the new best
+        bestRuns.append(bestResult)                 # Add the best run to our list
+    if returnFullResults:   # If they asked for everything,
+        return bestRuns     # just give it to them
+    else:                                   # If they didn't,
+        return [run[0] for run in bestRuns] # strip the numbers off and return those 
 
-def createCSV():
-    return  # This code doesn't work - it's only here in case we decide we want to be able to make .csv files again
-    
+def createCSV(genNumber):
     allResults = ["Run Number, Maximum X, Frame Reached\n"]
-    
-    outputFile = open(resultsPath + "../allResults.csv", 'w')  # Create a .csv
-    outputFile.writelines(allResults)                          # Write the results
-    outputFile.close()                                         # Close the file
+    results = getBestRuns(genNumber, 100, True)
+    for line in results:
+        line = str(line[0]) + ',' + str(line[1]) + ',' + str(line[2]) + '\n'
+        allResults.append(line)
+    writeCSV(allResults,"gen" + str(genNumber))
 
 if __name__ == '__main__':
-    print condenseRuns(0)
-    print getBestRuns(0,10)
+    #for gen in range(40):
+    #    createCSV(gen)
+    createCSV(1)
+    print getBestRuns(1,10)
