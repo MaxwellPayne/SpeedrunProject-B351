@@ -93,6 +93,28 @@ def writeCSV(lines,fileName):
     outputFile.writelines(lines)                            # Write the results
     outputFile.close()                                      # Close the file
 
+def combineCSVs(maxGen,minGen = 0,maxXOnly = True,fileName = "allResults"):
+    def extractMaxX(lineList,genNum):
+        maxXList = []
+        for lineToSplit in lineList:
+            tempList = lineToSplit.split(',')
+            maxXList.append(tempList[1] + ',')
+        maxXList[0] = str(genNum) + ','
+        return maxXList
+    
+    outputPath = os.path.join(_dir, "../Output/CSVs/")
+    outputLineList = ['' for _ in range(101)]        # Initialize the list
+    for genNum in range(minGen,maxGen):             # loop through each .csv
+        genCSV = open(outputPath + "gen" + str(genNum) + ".csv", 'r')
+        lineList = genCSV.read().splitlines()       # Read all the lines from the .csv, then close it
+        genCSV.close()
+        if maxXOnly:
+            lineList = extractMaxX(lineList,genNum)
+        for lineNum, line in enumerate(lineList):   # Add each line from the .csv to the output list
+            outputLineList[lineNum] += str(line) + ('' if maxXOnly else ',,')
+    outputLineList = [outputLineList[outLineNum] + '\n' for outLineNum in range(len(outputLineList))]
+    writeCSV(outputLineList,fileName)               # Write the new, combined .csv
+
 if __name__ == '__main__':
     print getRunsPerGen()
     print genDoneRunning(0)

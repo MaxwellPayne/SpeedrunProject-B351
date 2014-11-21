@@ -31,16 +31,14 @@ def getBestRuns(genNumber,numberOfRuns, returnFullResults = False):
 
 def createCSV(genNumber):
     allResults = ["Run Number, Maximum X, Frame Reached\n"]
-    #results = getBestRuns(genNumber, 100, True)
-    results = condenseRuns(2)
+    results = getBestRuns(genNumber, 100, True)
     for line in results:
         line = str(line[0]) + ',' + str(line[1]) + ',' + str(line[2]) + '\n'
         allResults.append(line)
     writeCSV(allResults,"gen" + str(genNumber))
 
 if __name__ == '__main__':
-    #for gen in range(40):
-    #    createCSV(gen)
-    createCSV(2)
-    print condenseRuns(2)
-    print getBestRuns(2,100)
+    for gen in range(11):
+        createCSV(gen)
+    combineCSVs(11)
+    print getBestRuns(0,10)
