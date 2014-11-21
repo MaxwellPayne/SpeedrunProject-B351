@@ -15,7 +15,7 @@ def getBestRuns(genNumber,numberOfRuns, returnFullResults = False):
     results = condenseRuns(genNumber)
     bestRuns = []
     for run in range(numberOfRuns):
-        bestResult = results[0]       # Initialize the result number
+        bestResult = [-1,-1,-1]       # Initialize the result number
         for result in results:                      # Look for the best result
             if result not in bestRuns:              # No double counting runs
                 if result[1] > bestResult[1]:       # If it got further,
@@ -31,7 +31,8 @@ def getBestRuns(genNumber,numberOfRuns, returnFullResults = False):
 
 def createCSV(genNumber):
     allResults = ["Run Number, Maximum X, Frame Reached\n"]
-    results = getBestRuns(genNumber, 100, True)
+    #results = getBestRuns(genNumber, 100, True)
+    results = condenseRuns(2)
     for line in results:
         line = str(line[0]) + ',' + str(line[1]) + ',' + str(line[2]) + '\n'
         allResults.append(line)
@@ -40,5 +41,6 @@ def createCSV(genNumber):
 if __name__ == '__main__':
     #for gen in range(40):
     #    createCSV(gen)
-    createCSV(1)
-    print getBestRuns(1,10)
+    createCSV(2)
+    print condenseRuns(2)
+    print getBestRuns(2,100)
