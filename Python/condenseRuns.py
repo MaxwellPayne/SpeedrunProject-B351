@@ -38,7 +38,7 @@ def createCSV(genNumber):
     writeCSV(allResults,"gen" + str(genNumber))
 
 if __name__ == '__main__':
-    for gen in range(11):
+    for gen in range(143):
         createCSV(gen)
-    combineCSVs(11)
-    print getBestRuns(0,10)
+    combineCSVs(143)
+    print getBestRuns(0,100)
